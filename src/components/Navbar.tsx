@@ -8,8 +8,11 @@ export default function Navbar() {
   const navItems = [
     { path: '/', label: '首页', icon: '🏠' },
     { path: '/core-code', label: '核心代码', icon: '💻' },
+    { path: '/yuantoumaodie-code', label: '圆头耄耋代码库', icon: '😾' },
     { path: '/conflict-lab', label: '冲突实验室', icon: '⚠️' },
-    { path: '/diagnostic', label: '诊断器', icon: '🔍' },
+    { path: '/diagnostic', label: '反骨检测', icon: '😾' },
+    { path: '/chronicle', label: '编年史', icon: '📜' },
+    { path: '/code-debugger', label: '代码调试器', icon: '🐛' },
     { path: '/about', label: '关于', icon: '📖' },
   ];
 
