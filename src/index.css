@@ -1,0 +1,299 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --vscode-bg: #1e1e1e;
+  --vscode-text: #d4d4d4;
+  --vscode-comment: #6a9955;
+  --vscode-string: #ce9178;
+  --vscode-keyword: #569cd6;
+  --vscode-error: #f44747;
+  --vscode-line-number: #858585;
+  --vscode-selection: #264f78;
+  --vscode-border: #3c3c3c;
+  
+  font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+  line-height: 1.5;
+  font-weight: 400;
+  
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--vscode-bg);
+  color: var(--vscode-text);
+  min-height: 100vh;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--vscode-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--vscode-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--vscode-line-number);
+}
+
+/* 选中文本样式 */
+::selection {
+  background-color: var(--vscode-selection);
+  color: var(--vscode-text);
+}
+
+/* 链接样式 */
+a {
+  color: var(--vscode-keyword);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #4ec9b0;
+}
+
+/* 代码块样式 */
+code {
+  font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+}
+
+/* 动画延迟 */
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.delay-400 {
+  animation-delay: 0.4s;
+}
+
+.delay-500 {
+  animation-delay: 0.5s;
+}
+
+/* 渐变背景 */
+.gradient-bg {
+  background: linear-gradient(135deg, #1e1e1e 0%, #252526 50%, #1e1e1e 100%);
+}
+
+/* 发光效果 */
+.glow-effect {
+  box-shadow: 0 0 10px rgba(86, 156, 214, 0.3);
+  transition: box-shadow 0.3s ease;
+}
+
+.glow-effect:hover {
+  box-shadow: 0 0 20px rgba(86, 156, 214, 0.5);
+}
+
+/* 终端光标 */
+.terminal-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background-color: var(--vscode-text);
+  animation: blink 1s step-end infinite;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+}
+
+/* 打字机效果 */
+.typewriter {
+  overflow: hidden;
+  border-right: 2px solid var(--vscode-text);
+  white-space: nowrap;
+  animation: typing 3.5s steps(40, end), blink 0.75s step-end infinite;
+}
+
+/* 代码行高亮 */
+.code-line:hover {
+  background-color: rgba(38, 79, 120, 0.3);
+}
+
+/* 按钮悬停效果 */
+.btn-hover {
+  transition: all 0.2s ease;
+}
+
+.btn-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 卡片悬停效果 */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* 响应式字体 */
+@media (max-width: 768px) {
+  :root {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    font-size: 13px;
+  }
+}
+
+/* 猫咪眼睛 - 代码光标闪烁 */
+.cat-eye-open {
+  animation: cursor-blink 1.2s step-end infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* 猫咪卡顿冻结 */
+.cat-lag-freeze {
+  animation: cat-lag 0.15s step-end infinite !important;
+}
+
+@keyframes cat-lag {
+  0% { filter: brightness(1); }
+  25% { filter: brightness(0.8) hue-rotate(5deg); }
+  50% { filter: brightness(1.1) hue-rotate(-5deg); }
+  75% { filter: brightness(0.9); }
+  100% { filter: brightness(1); }
+}
+
+/* 猫咪卡顿文字闪烁 */
+.cat-lag-text {
+  animation: lag-text-flicker 0.2s step-end infinite;
+}
+
+@keyframes lag-text-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* 猫咪眼睛故障效果 */
+.cat-eye-glitch {
+  animation: eye-glitch 0.15s step-end infinite;
+}
+
+@keyframes eye-glitch {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(1px, 0); }
+  50% { transform: translate(-1px, 1px); }
+  75% { transform: translate(0, -1px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* 猫咪尾巴摇摆 */
+.cat-tail-wag {
+  animation: tail-wag 1.5s ease-in-out infinite;
+  transform-origin: 24px 15px;
+}
+
+@keyframes tail-wag {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(8deg); }
+  75% { transform: rotate(-8deg); }
+}
+
+/* 猫咪爪子踩踏 */
+.cat-paw-left {
+  animation: paw-tap-left 3s ease-in-out infinite;
+}
+
+.cat-paw-right {
+  animation: paw-tap-right 3s ease-in-out infinite 0.5s;
+}
+
+@keyframes paw-tap-left {
+  0%, 90%, 100% { transform: translateY(0); }
+  95% { transform: translateY(-1px); }
+}
+
+@keyframes paw-tap-right {
+  0%, 85%, 100% { transform: translateY(0); }
+  90% { transform: translateY(-1px); }
+}
+
+/* 猫咪身体晃动 */
+.cat-body {
+  animation: body-wobble 4s ease-in-out infinite;
+}
+
+@keyframes body-wobble {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(1.02); }
+}
+
+/* 飘浮代码字符 */
+.floating-char {
+  animation: float-up var(--duration, 10s) linear forwards;
+}
+
+@keyframes float-up {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  5% {
+    opacity: var(--char-opacity, 0.2);
+  }
+  50% {
+    transform: translateY(-50vh) rotate(3deg);
+  }
+  95% {
+    opacity: var(--char-opacity, 0.2);
+  }
+  100% {
+    transform: translateY(-110vh) rotate(-2deg);
+    opacity: 0;
+  }
+}
+
+/* 猫咪阴影呼吸 */
+.cat-shadow {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 4px;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.3) 0%, transparent 70%);
+  animation: shadow-pulse 4s ease-in-out infinite;
+}
+
+@keyframes shadow-pulse {
+  0%, 100% { transform: translateX(-50%) scaleX(1); opacity: 0.3; }
+  50% { transform: translateX(-50%) scaleX(0.9); opacity: 0.5; }
+}
