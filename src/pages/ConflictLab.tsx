@@ -3,6 +3,17 @@ import CodeHighlight from '../components/CodeHighlight';
 import { conflictScenariosData, ConflictScenario } from '../data/conflictScenarios';
 import { epicConflictsData, EpicConflict } from '../data/epicConflicts';
 
+function getPreviewLine(code: string): string {
+  const lines = code.split('\n');
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('#') && !trimmed.startsWith('//') && !trimmed.startsWith('/*')) {
+      return trimmed.length > 40 ? trimmed.slice(0, 40) + '...' : trimmed;
+    }
+  }
+  return lines[0]?.trim() || '';
+}
+
 export default function ConflictLabPage() {
   const [selectedScenario, setSelectedScenario] = useState<ConflictScenario | null>(null);
   const [animationState, setAnimationState] = useState<'idle' | 'running' | 'conflict' | 'restarted'>('idle');
@@ -111,7 +122,7 @@ export default function ConflictLabPage() {
             {conflictScenariosData.map((scenario) => (
               <div
                 key={scenario.id}
-                className={`bg-[#252526] rounded-lg border overflow-hidden cursor-pointer transition-all duration-300 ${
+                className={`bg-[#252526] rounded-lg border overflow-hidden cursor-pointer transition-all duration-300 flex flex-col ${
                   selectedScenario?.id === scenario.id
                     ? 'border-[#f44747] shadow-lg shadow-[#f44747]/20'
                     : 'border-[#3c3c3c] hover:border-[#f44747]'
@@ -121,7 +132,6 @@ export default function ConflictLabPage() {
                   setAnimationState('idle');
                 }}
               >
-                {/* 卡片头部 */}
                 <div className="flex items-center justify-between px-4 py-3 bg-[#2d2d2d] border-b border-[#3c3c3c]">
                   <div className="flex items-center space-x-3">
                     <span className="text-2xl">{scenario.icon}</span>
@@ -137,30 +147,27 @@ export default function ConflictLabPage() {
                   </span>
                 </div>
 
-                {/* 卡片内容 */}
-                <div className="p-4">
+                <div className="p-4 flex-1">
                   <p className="text-sm text-[#858585] mb-4 line-clamp-2">
                     {scenario.description}
                   </p>
 
-                  {/* 冲突双方预览 */}
                   <div className="flex space-x-2 mb-4">
-                    <div className="flex-1 bg-[#1e1e1e] rounded p-2">
+                    <div className="flex-1 bg-[#1e1e1e] rounded p-2 min-h-[52px]">
                       <div className="text-xs text-[#569cd6] mb-1">模块A</div>
-                      <div className="text-xs text-[#858585] line-clamp-2">
-                        {scenario.codeA.split('\n')[1]}
+                      <div className="text-xs text-[#858585] truncate">
+                        {getPreviewLine(scenario.codeA)}
                       </div>
                     </div>
-                    <div className="flex-1 bg-[#1e1e1e] rounded p-2">
+                    <div className="flex-1 bg-[#1e1e1e] rounded p-2 min-h-[52px]">
                       <div className="text-xs text-[#f44747] mb-1">模块B</div>
-                      <div className="text-xs text-[#858585] line-clamp-2">
-                        {scenario.codeB.split('\n')[1]}
+                      <div className="text-xs text-[#858585] truncate">
+                        {getPreviewLine(scenario.codeB)}
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* 底部提示 */}
                 <div className="px-4 py-2 bg-[#2d2d2d] border-t border-[#3c3c3c]">
                   <p className="text-xs text-[#f44747]">
                     点击查看详情 →
@@ -198,7 +205,7 @@ export default function ConflictLabPage() {
             {epicConflictsData.map((conflict) => (
               <div
                 key={conflict.id}
-                className={`bg-[#252526] rounded-lg border overflow-hidden cursor-pointer transition-all duration-300 ${
+                className={`bg-[#252526] rounded-lg border overflow-hidden cursor-pointer transition-all duration-300 flex flex-col ${
                   selectedEpic?.id === conflict.id
                     ? 'border-[#ff0000] shadow-lg shadow-[#ff0000]/20'
                     : 'border-[#3c3c3c] hover:border-[#ff0000]'
@@ -223,22 +230,22 @@ export default function ConflictLabPage() {
                   </span>
                 </div>
 
-                <div className="p-4">
+                <div className="p-4 flex-1">
                   <p className="text-sm text-[#858585] mb-4 line-clamp-2">
                     {conflict.description}
                   </p>
 
                   <div className="flex space-x-2 mb-4">
-                    <div className="flex-1 bg-[#1e1e1e] rounded p-2">
+                    <div className="flex-1 bg-[#1e1e1e] rounded p-2 min-h-[52px]">
                       <div className="text-xs text-[#569cd6] mb-1">⚔️ 方A</div>
-                      <div className="text-xs text-[#858585] line-clamp-2">
-                        {conflict.codeA.split('\n')[1]}
+                      <div className="text-xs text-[#858585] truncate">
+                        {getPreviewLine(conflict.codeA)}
                       </div>
                     </div>
-                    <div className="flex-1 bg-[#1e1e1e] rounded p-2">
+                    <div className="flex-1 bg-[#1e1e1e] rounded p-2 min-h-[52px]">
                       <div className="text-xs text-[#f44747] mb-1">🛡️ 方B</div>
-                      <div className="text-xs text-[#858585] line-clamp-2">
-                        {conflict.codeB.split('\n')[1]}
+                      <div className="text-xs text-[#858585] truncate">
+                        {getPreviewLine(conflict.codeB)}
                       </div>
                     </div>
                   </div>

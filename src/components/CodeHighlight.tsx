@@ -1,10 +1,121 @@
-import { useState, useEffect } from 'react';
-
 interface CodeHighlightProps {
   code: string;
   language?: string;
   showLineNumbers?: boolean;
   className?: string;
+}
+
+const PYTHON_KEYWORDS = new Set([
+  'def', 'class', 'if', 'else', 'elif', 'for', 'while', 'return',
+  'import', 'from', 'as', 'try', 'except', 'finally', 'raise',
+  'with', 'yield', 'lambda', 'pass', 'break', 'continue',
+  'and', 'or', 'not', 'in', 'is', 'True', 'False', 'None',
+]);
+
+const JS_KEYWORDS = new Set([
+  'function', 'const', 'let', 'var', 'class', 'new', 'this',
+  'throw', 'try', 'catch', 'async', 'await', 'import', 'export',
+  'default', 'from', 'true', 'false', 'null', 'undefined',
+]);
+
+const PYTHON_BUILTINS = new Set([
+  'print', 'len', 'range', 'type', 'int', 'str', 'float', 'list',
+  'dict', 'set', 'tuple', 'bool', 'input', 'open', 'abs', 'all',
+  'any', 'bin', 'chr', 'dir', 'enumerate', 'eval', 'exec', 'filter',
+  'format', 'getattr', 'globals', 'hasattr', 'hash', 'hex', 'id',
+  'isinstance', 'iter', 'locals', 'map', 'max', 'min', 'next',
+  'oct', 'ord', 'pow', 'repr', 'reversed', 'round', 'setattr',
+  'slice', 'sorted', 'sum', 'super', 'vars', 'zip',
+]);
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function highlightLine(line: string): string {
+  const tokens: string[] = [];
+  let i = 0;
+
+  while (i < line.length) {
+    if (line[i] === '#') {
+      tokens.push(`<span class="text-[#6a9955]">${escapeHtml(line.slice(i))}</span>`);
+      break;
+    }
+
+    if (line[i] === '/' && line[i + 1] === '/') {
+      tokens.push(`<span class="text-[#6a9955]">${escapeHtml(line.slice(i))}</span>`);
+      break;
+    }
+
+    if (line[i] === '/' && line[i + 1] === '*') {
+      const end = line.indexOf('*/', i + 2);
+      if (end !== -1) {
+        tokens.push(`<span class="text-[#6a9955]">${escapeHtml(line.slice(i, end + 2))}</span>`);
+        i = end + 2;
+        continue;
+      }
+      tokens.push(`<span class="text-[#6a9955]">${escapeHtml(line.slice(i))}</span>`);
+      break;
+    }
+
+    if (line[i] === '"' || line[i] === "'") {
+      const quote = line[i];
+      let j = i + 1;
+      while (j < line.length) {
+        if (line[j] === '\\') {
+          j += 2;
+          continue;
+        }
+        if (line[j] === quote) {
+          j++;
+          break;
+        }
+        j++;
+      }
+      tokens.push(`<span class="text-[#ce9178]">${escapeHtml(line.slice(i, j))}</span>`);
+      i = j;
+      continue;
+    }
+
+    if (/[a-zA-Z_$]/.test(line[i])) {
+      let j = i;
+      while (j < line.length && /[a-zA-Z0-9_$]/.test(line[j])) {
+        j++;
+      }
+      const word = line.slice(i, j);
+
+      if (PYTHON_KEYWORDS.has(word) || JS_KEYWORDS.has(word)) {
+        tokens.push(`<span class="text-[#569cd6]">${escapeHtml(word)}</span>`);
+      } else if (PYTHON_BUILTINS.has(word)) {
+        tokens.push(`<span class="text-[#dcdcaa]">${escapeHtml(word)}</span>`);
+      } else if (j < line.length && line[j] === '(') {
+        tokens.push(`<span class="text-[#dcdcaa]">${escapeHtml(word)}</span>`);
+      } else {
+        tokens.push(escapeHtml(word));
+      }
+      i = j;
+      continue;
+    }
+
+    if (/\d/.test(line[i])) {
+      let j = i;
+      while (j < line.length && /[\d.]/.test(line[j])) {
+        j++;
+      }
+      tokens.push(`<span class="text-[#b5cea8]">${escapeHtml(line.slice(i, j))}</span>`);
+      i = j;
+      continue;
+    }
+
+    tokens.push(escapeHtml(line[i]));
+    i++;
+  }
+
+  return tokens.join('');
 }
 
 export default function CodeHighlight({
@@ -13,62 +124,10 @@ export default function CodeHighlight({
   showLineNumbers = true,
   className = '',
 }: CodeHighlightProps) {
-  const [highlightedCode, setHighlightedCode] = useState('');
-
-  useEffect(() => {
-    // 语法高亮
-    const highlight = (text: string) => {
-      let result = text;
-      
-      // Python关键字高亮
-      const pythonKeywords = ['def', 'class', 'if', 'else', 'elif', 'for', 'while', 'return', 'import', 'from', 'as', 'try', 'except', 'finally', 'raise', 'with', 'yield', 'lambda', 'pass', 'break', 'continue', 'and', 'or', 'not', 'in', 'is', 'True', 'False', 'None'];
-      
-      pythonKeywords.forEach(keyword => {
-        const regex = new RegExp(`\\b${keyword}\\b`, 'g');
-        result = result.replace(regex, `<span class="text-[#569cd6]">${keyword}</span>`);
-      });
-      
-      // JavaScript关键字高亮（备用）
-      const jsKeywords = ['function', 'const', 'let', 'var', 'class', 'new', 'this', 'throw', 'try', 'catch', 'async', 'await', 'import', 'export', 'default', 'from'];
-      jsKeywords.forEach(keyword => {
-        const regex = new RegExp(`\\b${keyword}\\b`, 'g');
-        result = result.replace(regex, `<span class="text-[#569cd6]">${keyword}</span>`);
-      });
-      
-      // 字符串高亮
-      result = result.replace(/(["'])(?:(?=(\\?))\2.)*?\1/g, '<span class="text-[#ce9178]">$&</span>');
-      
-      // Python注释高亮
-      result = result.replace(/#.*$/gm, '<span class="text-[#6a9955]">$&</span>');
-      
-      // JavaScript注释高亮
-      result = result.replace(/\/\/.*$/gm, '<span class="text-[#6a9955]">$&</span>');
-      result = result.replace(/\/\*[\s\S]*?\*\//g, '<span class="text-[#6a9955]">$&</span>');
-      
-      // 数字高亮
-      result = result.replace(/\b\d+\.?\d*\b/g, '<span class="text-[#b5cea8]">$&</span>');
-      
-      // 函数名高亮
-      result = result.replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g, '<span class="text-[#dcdcaa]">$1</span>(');
-      
-      // Python内置函数高亮
-      const builtins = ['print', 'len', 'range', 'type', 'int', 'str', 'float', 'list', 'dict', 'set', 'tuple', 'bool', 'input', 'open', 'file', 'abs', 'all', 'any', 'bin', 'chr', 'dir', 'divmod', 'enumerate', 'eval', 'exec', 'filter', 'format', 'getattr', 'globals', 'hasattr', 'hash', 'help', 'hex', 'id', 'isinstance', 'issubclass', 'iter', 'locals', 'map', 'max', 'min', 'next', 'oct', 'ord', 'pow', 'property', 'repr', 'reversed', 'round', 'setattr', 'slice', 'sorted', 'staticmethod', 'sum', 'super', 'vars', 'zip'];
-      builtins.forEach(builtin => {
-        const regex = new RegExp(`\\b${builtin}\\b`, 'g');
-        result = result.replace(regex, `<span class="text-[#dcdcaa]">${builtin}</span>`);
-      });
-      
-      return result;
-    };
-
-    setHighlightedCode(highlight(code));
-  }, [code]);
-
   const lines = code.split('\n');
 
   return (
     <div className={`bg-[#1e1e1e] rounded-lg border border-[#3c3c3c] overflow-hidden ${className}`}>
-      {/* 代码头部 */}
       <div className="flex items-center px-4 py-2 bg-[#252526] border-b border-[#3c3c3c]">
         <div className="flex space-x-2">
           <div className="w-3 h-3 rounded-full bg-[#f44747]" />
@@ -80,11 +139,10 @@ export default function CodeHighlight({
         </div>
       </div>
       
-      {/* 代码内容 */}
       <div className="p-4 overflow-x-auto">
         <pre className="font-mono text-sm leading-relaxed">
           <code>
-            {showLineNumbers && (
+            {showLineNumbers ? (
               <div className="flex">
                 <div className="pr-4 text-right text-[#858585] select-none">
                   {lines.map((_, index) => (
@@ -99,15 +157,23 @@ export default function CodeHighlight({
                       key={index}
                       className="leading-relaxed hover:bg-[#264f78]/30 transition-colors duration-150"
                       dangerouslySetInnerHTML={{
-                        __html: highlightedCode.split('\n')[index] || '',
+                        __html: highlightLine(line) || '&nbsp;',
                       }}
                     />
                   ))}
                 </div>
               </div>
-            )}
-            {!showLineNumbers && (
-              <div dangerouslySetInnerHTML={{ __html: highlightedCode }} />
+            ) : (
+              <div>
+                {lines.map((line, index) => (
+                  <div
+                    key={index}
+                    dangerouslySetInnerHTML={{
+                      __html: highlightLine(line) || '&nbsp;',
+                    }}
+                  />
+                ))}
+              </div>
             )}
           </code>
         </pre>
