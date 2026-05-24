@@ -214,24 +214,110 @@ const levels: Level[] = [
   },
 ];
 
-function CodeLine({ line, lineNum }: { line: string; lineNum: number }) {
-  const highlight = (text: string) => {
-    let result = text;
-    const keywords = ['class', 'constructor', 'function', 'const', 'let', 'var', 'return', 'if', 'else', 'while', 'for', 'forEach', 'new', 'this', 'true', 'false', 'null', 'undefined'];
-    keywords.forEach(kw => {
-      result = result.replace(new RegExp(`\\b${kw}\\b`, 'g'), `<span class="text-[#569cd6]">${kw}</span>`);
-    });
-    result = result.replace(/(["'])(?:(?=(\\?))\2.)*?\1/g, '<span class="text-[#ce9178]">$&</span>');
-    result = result.replace(/\/\/.*$/gm, '<span class="text-[#6a9955]">$&</span>');
-    result = result.replace(/\b\d+\.?\d*\b/g, '<span class="text-[#b5cea8]">$&</span>');
-    result = result.replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g, '<span class="text-[#dcdcaa]">$1</span>(');
-    return result;
-  };
+const JS_KEYWORDS = new Set([
+  'class', 'constructor', 'function', 'const', 'let', 'var', 'return',
+  'if', 'else', 'while', 'for', 'new', 'this', 'true', 'false',
+  'null', 'undefined', 'throw', 'try', 'catch', 'async', 'await',
+  'import', 'export', 'default', 'from',
+]);
 
+const JS_BUILTINS = new Set([
+  'console', 'Math', 'Object', 'Array', 'String', 'Number', 'Boolean',
+  'Error', 'JSON', 'Promise', 'Map', 'Set', 'Date', 'RegExp',
+  'setTimeout', 'setInterval', 'clearTimeout', 'clearInterval',
+  'parseInt', 'parseFloat', 'isNaN', 'isFinite',
+]);
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function highlightCode(line: string): string {
+  const tokens: string[] = [];
+  let i = 0;
+
+  while (i < line.length) {
+    if (line[i] === '/' && line[i + 1] === '/') {
+      tokens.push(`<span class="text-[#6a9955]">${escapeHtml(line.slice(i))}</span>`);
+      break;
+    }
+
+    if (line[i] === '/' && line[i + 1] === '*') {
+      const end = line.indexOf('*/', i + 2);
+      if (end !== -1) {
+        tokens.push(`<span class="text-[#6a9955]">${escapeHtml(line.slice(i, end + 2))}</span>`);
+        i = end + 2;
+        continue;
+      }
+      tokens.push(`<span class="text-[#6a9955]">${escapeHtml(line.slice(i))}</span>`);
+      break;
+    }
+
+    if (line[i] === '"' || line[i] === "'") {
+      const quote = line[i];
+      let j = i + 1;
+      while (j < line.length) {
+        if (line[j] === '\\') {
+          j += 2;
+          continue;
+        }
+        if (line[j] === quote) {
+          j++;
+          break;
+        }
+        j++;
+      }
+      tokens.push(`<span class="text-[#ce9178]">${escapeHtml(line.slice(i, j))}</span>`);
+      i = j;
+      continue;
+    }
+
+    if (/[a-zA-Z_$]/.test(line[i])) {
+      let j = i;
+      while (j < line.length && /[a-zA-Z0-9_$]/.test(line[j])) {
+        j++;
+      }
+      const word = line.slice(i, j);
+
+      if (JS_KEYWORDS.has(word)) {
+        tokens.push(`<span class="text-[#569cd6]">${escapeHtml(word)}</span>`);
+      } else if (JS_BUILTINS.has(word)) {
+        tokens.push(`<span class="text-[#4ec9b0]">${escapeHtml(word)}</span>`);
+      } else if (j < line.length && line[j] === '(') {
+        tokens.push(`<span class="text-[#dcdcaa]">${escapeHtml(word)}</span>`);
+      } else {
+        tokens.push(escapeHtml(word));
+      }
+      i = j;
+      continue;
+    }
+
+    if (/\d/.test(line[i])) {
+      let j = i;
+      while (j < line.length && /[\d.]/.test(line[j])) {
+        j++;
+      }
+      tokens.push(`<span class="text-[#b5cea8]">${escapeHtml(line.slice(i, j))}</span>`);
+      i = j;
+      continue;
+    }
+
+    tokens.push(escapeHtml(line[i]));
+    i++;
+  }
+
+  return tokens.join('');
+}
+
+function CodeLine({ line, lineNum }: { line: string; lineNum: number }) {
   return (
     <div className="flex hover:bg-[#264f78]/30 transition-colors duration-150">
       <span className="w-10 text-right pr-4 text-[#858585] select-none shrink-0">{lineNum}</span>
-      <span className="flex-1" dangerouslySetInnerHTML={{ __html: highlight(line) || '&nbsp;' }} />
+      <span className="flex-1" dangerouslySetInnerHTML={{ __html: highlightCode(line) || '&nbsp;' }} />
     </div>
   );
 }
