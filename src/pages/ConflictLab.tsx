@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import CodeHighlight from '../components/CodeHighlight';
+import CatAnimation from '../components/CatAnimation';
+import { SCRIPTS } from '../animation/scripts';
 import { conflictScenariosData, ConflictScenario } from '../data/conflictScenarios';
 import { epicConflictsData, EpicConflict } from '../data/epicConflicts';
 
@@ -148,18 +150,34 @@ export default function ConflictLabPage() {
                 </div>
 
                 <div className="p-4 flex-1">
-                  <p className="text-sm text-[#858585] mb-4 line-clamp-2">
+                  <p className="text-sm text-[#858585] mb-3 line-clamp-2">
                     {scenario.description}
                   </p>
 
-                  <div className="flex space-x-2 mb-4">
-                    <div className="flex-1 bg-[#1e1e1e] rounded p-2 min-h-[52px]">
+                  {/* 动画预览 */}
+                  <div className="bg-[#1e1e1e] rounded mb-3 overflow-hidden border border-[#3c3c3c]">
+                    {SCRIPTS[scenario.id] ? (
+                      <CatAnimation
+                        script={SCRIPTS[scenario.id]}
+                        width={160}
+                        height={88}
+                        className="w-full"
+                      />
+                    ) : (
+                      <div className="h-[88px] flex items-center justify-center text-[#858585] text-xs">
+                        {scenario.icon} 动画加载中...
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex space-x-2">
+                    <div className="flex-1 bg-[#1e1e1e] rounded p-2 min-h-[40px]">
                       <div className="text-xs text-[#569cd6] mb-1">模块A</div>
                       <div className="text-xs text-[#858585] truncate">
                         {getPreviewLine(scenario.codeA)}
                       </div>
                     </div>
-                    <div className="flex-1 bg-[#1e1e1e] rounded p-2 min-h-[52px]">
+                    <div className="flex-1 bg-[#1e1e1e] rounded p-2 min-h-[40px]">
                       <div className="text-xs text-[#f44747] mb-1">模块B</div>
                       <div className="text-xs text-[#858585] truncate">
                         {getPreviewLine(scenario.codeB)}
@@ -231,18 +249,34 @@ export default function ConflictLabPage() {
                 </div>
 
                 <div className="p-4 flex-1">
-                  <p className="text-sm text-[#858585] mb-4 line-clamp-2">
+                  <p className="text-sm text-[#858585] mb-3 line-clamp-2">
                     {conflict.description}
                   </p>
 
-                  <div className="flex space-x-2 mb-4">
-                    <div className="flex-1 bg-[#1e1e1e] rounded p-2 min-h-[52px]">
+                  {/* 动画预览 */}
+                  <div className="bg-[#1e1e1e] rounded mb-3 overflow-hidden border border-[#3c3c3c]">
+                    {SCRIPTS[conflict.id] ? (
+                      <CatAnimation
+                        script={SCRIPTS[conflict.id]}
+                        width={160}
+                        height={88}
+                        className="w-full"
+                      />
+                    ) : (
+                      <div className="h-[88px] flex items-center justify-center text-[#858585] text-xs">
+                        {conflict.icon} 动画加载中...
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex space-x-2">
+                    <div className="flex-1 bg-[#1e1e1e] rounded p-2 min-h-[40px]">
                       <div className="text-xs text-[#569cd6] mb-1">⚔️ 方A</div>
                       <div className="text-xs text-[#858585] truncate">
                         {getPreviewLine(conflict.codeA)}
                       </div>
                     </div>
-                    <div className="flex-1 bg-[#1e1e1e] rounded p-2 min-h-[52px]">
+                    <div className="flex-1 bg-[#1e1e1e] rounded p-2 min-h-[40px]">
                       <div className="text-xs text-[#f44747] mb-1">🛡️ 方B</div>
                       <div className="text-xs text-[#858585] truncate">
                         {getPreviewLine(conflict.codeB)}

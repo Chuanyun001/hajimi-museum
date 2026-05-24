@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import CodeHighlight from '../components/CodeHighlight';
+import CatAnimation from '../components/CatAnimation';
+import { SCRIPTS } from '../animation/scripts';
 import { yuantouCodeData, YuantouCode } from '../data/yuantoumaodieCode';
 
 export default function YuantouMaodieCode() {
@@ -77,15 +79,24 @@ export default function YuantouMaodieCode() {
 
                 {/* 卡片内容 */}
                 <div className="p-4">
-                  <p className="text-sm text-[#858585] mb-4 line-clamp-2">
+                  <p className="text-sm text-[#858585] mb-3 line-clamp-2">
                     {code.description}
                   </p>
 
-                  {/* 代码预览 */}
-                  <div className="bg-[#1e1e1e] rounded p-3 mb-4">
-                    <pre className="text-xs text-[#d4d4d4] overflow-hidden">
-                      <code>{code.code.split('\n').slice(0, 8).join('\n')}...</code>
-                    </pre>
+                  {/* 动画预览 */}
+                  <div className="bg-[#1e1e1e] rounded mb-3 overflow-hidden border border-[#3c3c3c]">
+                    {SCRIPTS[code.id] ? (
+                      <CatAnimation
+                        script={SCRIPTS[code.id]}
+                        width={160}
+                        height={88}
+                        className="w-full"
+                      />
+                    ) : (
+                      <div className="h-[88px] flex items-center justify-center text-[#858585] text-xs">
+                        {code.icon} 动画加载中...
+                      </div>
+                    )}
                   </div>
 
                   {/* 触发条件 */}
